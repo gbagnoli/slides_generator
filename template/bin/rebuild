@@ -1,0 +1,25 @@
+#!/bin/bash
+
+sources="slides.md Makefile"
+
+function build() {
+    # vim use move_self, we need to wait a bit or the file won't be found
+    sleep 0.1
+    make all
+    res=$?
+    [ $res -ne 0 ] && echo "--- FAILED BUILD ---" || echo "--- OK ---"
+}
+
+trap exit INT
+
+build
+if [[ "$(uname)" == "Darwin" ]]; then
+  while fswatch -1 slides.md; do
+    build
+  done
+
+else
+  while inotifywait -e move_self -e modify $sources; do
+      build
+  done
+fi

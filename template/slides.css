@@ -1,0 +1,15 @@
+.reveal pre {
+    width: 110%;
+}
+
+.reveal pre code {
+    padding : 0px;
+}
+
+.reveal h1 {
+  font-size: 2em;
+}
+
+.reveal h2 {
+  font-size: 1.5em;
+}

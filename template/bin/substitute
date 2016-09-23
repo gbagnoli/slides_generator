@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eu
+SRC="$1"
+DEST="$2"
+s="sed"
+[[ "$(uname)" == "Darwin" ]] && s="gsed"
+
+NOW=$(date +%Y-%m-%d)
+$s -e "s/@@DATE@@/$NOW/g" "$SRC" > "$DEST"
