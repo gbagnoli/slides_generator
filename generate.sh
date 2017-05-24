@@ -10,18 +10,19 @@ OUTFILE="${SLIDES_FILENAME:-}"
 REVEAL="${REVEAL_REPO_URI:-https://github.com/hakimel/reveal.js.git}"
 
 usage() {
-  echo "$0 [ -a author ] [ -t title ] [ -f filename ] [ -r reveal git url ] <target dir>"
+  echo "$0 [-h] [-a author] [-t title] [-f filename] [-r reveal_git_url] <target dir>"
   echo
   echo "<target dir> is mandatory: the directory should not exists, but its parent must"
   echo
   echo "Options:"
+  echo "-h : show this help"
   echo "-a : set the author. Defaults to $(whoami) if not set"
   echo "-t : set the slides' title. Defaults to 'MY SLIDES' if not set"
   echo "-f : output filename. Defaults to 'slides' if not set. .html suffix is automatically added"
   echo "-r : reveal js git uri. Defaults to $REVEAL"
 }
 
-while getopts ":a:t:f:r:" opt; do
+while getopts ":a:t:f:r:h" opt; do
   case $opt in
     a)
       echo "Setting author to $OPTARG"
@@ -31,7 +32,7 @@ while getopts ":a:t:f:r:" opt; do
       echo "Setting title to $OPTARG"
       TITLE="$OPTARG"
       ;;
-    s)
+    f)
       echo "Setting slides filename: $OPTARG"
       OUTFILE="$OPTARG"
       ;;
@@ -39,8 +40,13 @@ while getopts ":a:t:f:r:" opt; do
       echo "Setting reveal repo uri to $OPTARG"
       REVEAL="$OPTARG"
       ;;
+    h)
+      usage
+      exit 0
+      ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
+      usage
       exit 1
       ;;
     :)
@@ -109,5 +115,4 @@ git ci -m 'Initial slide skel'
 popd &>/dev/null
 popd &>/dev/null
 
-
-
+echo "Congrats! Your slides are awaiting for you at $TARGET"
