@@ -107,6 +107,7 @@ pushd "$TARGET" &>/dev/null
 mkdir images
 touch images/.gitkeep
 git init
+git commit --allow-empty -m "Initial empty commit"
 ln -sf  "../../bin/pre-commit" .git/hooks/pre-commit
 git submodule add "$REVEAL"
 git add .
