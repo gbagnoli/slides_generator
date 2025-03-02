@@ -2,24 +2,39 @@
 
 sources="slides.md Makefile"
 
-function build() {
+build() {
     # vim use move_self, we need to wait a bit or the file won't be found
     sleep 0.1
     make all
     res=$?
     [ $res -ne 0 ] && echo "--- FAILED BUILD ---" || echo "--- OK ---"
+    return $res
+}
+
+darwin() {
+  build
+  while fswatch -1 slides.md; do
+    build
+  done
+}
+
+linux() {
+  if ! command -v inotifywait &>/dev/null; then
+    echo >&2 "Missing inotifywait. Make sure to install inotify-tools"
+    exit 1
+  fi
+
+  build
+  # shellcheck disable=SC2086
+  while inotifywait -e move_self -e modify $sources; do
+      build
+  done
 }
 
 trap exit INT
 
-build
 if [[ "$(uname)" == "Darwin" ]]; then
-  while fswatch -1 slides.md; do
-    build
-  done
-
+  darwin
 else
-  while inotifywait -e move_self -e modify $sources; do
-      build
-  done
+  linux
 fi

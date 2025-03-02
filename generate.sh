@@ -75,6 +75,14 @@ elif [ ! -d "$(dirname "$TARGET")" ]; then
   exit 4
 fi
 
+for cmd in pandoc git make; do
+  if ! command -v $cmd &>/dev/null; then
+    echo >&2 "$cmd not installed. Makes sure to install it first"
+    exit 5
+  fi
+  echo "Found $cmd at $(command -v $cmd)"
+done
+
 if [ -z "$TITLE" ]; then
   echo 'No title provided, setting to "MY SLIDES". You can change it later in slides.md'
   TITLE="MY SLIDES"
@@ -91,7 +99,13 @@ if [ -z "$OUTFILE" ]; then
 fi
 
 s="sed"
-[[ "$(uname)" == "Darwin" ]] && s="gsed"
+if [[ "$(uname)" == "Darwin" ]]; then
+  if ! command -v gsed &>/dev/null; then
+    echo >&2 "gsed not found. Please install it with brew install gnu-sed"
+    exit 5
+  fi
+  s="gsed"
+fi
 
 pushd "$(dirname "$0")" &> /dev/null
 echo "Generating slides in $TARGET"
