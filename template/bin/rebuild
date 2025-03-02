@@ -1,7 +1,16 @@
 #!/bin/bash
 
 sources="slides.md Makefile"
+SERVE=false
 SERVE_PID=
+
+usage() {
+  echo "$0 [-h] [-s]"
+  echo
+  echo "Options:"
+  echo "-h : show this help"
+  echo "-s : call serve"
+}
 
 build() {
     # vim use move_self, we need to wait a bit or the file won't be found
@@ -13,6 +22,7 @@ build() {
 }
 
 serve() {
+  $SERVE || return
   make serve &
   SERVE_PID=$!
 }
@@ -46,6 +56,27 @@ quit() {
 }
 
 trap quit INT
+while getopts "sh" opt; do
+
+  case $opt in
+    s)
+      SERVE=true
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
 
 if [[ "$(uname)" == "Darwin" ]]; then
   darwin
