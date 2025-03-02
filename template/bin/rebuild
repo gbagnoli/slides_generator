@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sources="slides.md Makefile"
+SERVE_PID=
 
 build() {
     # vim use move_self, we need to wait a bit or the file won't be found
@@ -9,6 +10,11 @@ build() {
     res=$?
     [ $res -ne 0 ] && echo "--- FAILED BUILD ---" || echo "--- OK ---"
     return $res
+}
+
+serve() {
+  make serve &
+  SERVE_PID=$!
 }
 
 darwin() {
@@ -25,13 +31,21 @@ linux() {
   fi
 
   build
+  serve
   # shellcheck disable=SC2086
   while inotifywait -e move_self -e modify $sources; do
       build
   done
 }
 
-trap exit INT
+quit() {
+  if [ -n "$SERVE_PID" ]; then
+    kill "$SERVE_PID"
+  fi
+  exit
+}
+
+trap quit INT
 
 if [[ "$(uname)" == "Darwin" ]]; then
   darwin

@@ -75,7 +75,7 @@ elif [ ! -d "$(dirname "$TARGET")" ]; then
   exit 4
 fi
 
-for cmd in pandoc git make; do
+for cmd in pandoc git make curl jq tar; do
   if ! command -v $cmd &>/dev/null; then
     echo >&2 "$cmd not installed. Makes sure to install it first"
     exit 5
@@ -126,6 +126,7 @@ ln -sf  "../../bin/pre-commit" .git/hooks/pre-commit
 git submodule add "$REVEAL"
 git add .
 git ci -m 'Initial slide skel'
+make bin/static-web-server
 
 popd &>/dev/null
 popd &>/dev/null
