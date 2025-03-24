@@ -1,7 +1,11 @@
 SHELL := /bin/bash
 all: develop
+theme = sky
 
-cmd = pandoc --css reveal.js/dist/theme/sky.css --css slides.css -s -i -t revealjs slides-generated.md -V transition:none -V theme:sky -o
+cmd = pandoc --css reveal.js/dist/theme/$(theme).css --css slides.css \
+				-s -i -t revealjs --slide-level=2 \
+				-V transition:none -V theme:$(theme) -V revealjs-url:reveal.js \
+				slides-generated.md -o
 
 clean:
 	@rm -rf slides-dev.html slides-generated.md
