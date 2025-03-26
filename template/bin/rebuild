@@ -25,10 +25,16 @@ serve() {
   $SERVE || return
   make serve &
   SERVE_PID=$!
+  echo "You can know access the slides at http://localhost:3333/slides-dev.html"
 }
 
 darwin() {
+  if ! command -v fswatch &>/dev/null; then
+    echo >&2 "Missing fswtch. Make sure to install (i.e. brew install fswatch)"
+    exit 1
+  fi
   build
+  serve
   while fswatch -1 slides.md; do
     build
   done

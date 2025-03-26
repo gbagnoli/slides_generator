@@ -25,9 +25,8 @@ with an embedded dev webserver with `make serve`
 Under `bin/` there is a handy script `bin/rebuild` which will watch the files
 with `inotify` on linux (`fswatch` on mac) and rebuilds the slides in develop
 mode when the `slides.md` file changes.
-On linux, it supports a `-s` switch which will make the rebuild script also run
+It also supports a `-s` switch which will make the rebuild script also run
 the integrated webserver - i.e. `./bin/release -s`.
-This is not supported yet on macos.
 
 ## Structuring the slides - and config
 

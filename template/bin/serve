@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+set -u
+set -o pipefail
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SERVER="${SCRIPT_DIR}/static-web-server"
+FORCE_DOWNLOAD="${FORCE_DOWNLOAD:-false}"
+NO_SERVE="${NO_SERVE:-false}"
+
+is_macos() {
+  [[ "$(uname)" == "Darwin" ]]
+  return $?
+}
+
+download() {
+  force=${1:-false}
+  if ! $force && [ -f "$SERVER" ];
+  then
+    return
+  fi
+  taropts="--wildcards -xzf"
+  variant="unknown-linux-gnu"
+  arch="$(uname -m)"
+  if is_macos ;then
+    taropts="-xzf"
+    variant="apple-darwin"
+    if [[ "$arch" == "arm64" ]]; then
+      arch="aarch64"
+    fi
+  fi
+  name="${arch}-${variant}"
+  curl -sL https://api.github.com/repos/static-web-server/static-web-server/releases | \
+    jq -r '.[0].assets[] | select(.name | contains("'"${name}"'")) | .browser_download_url' | \
+    xargs curl -sL | tar -C "$SCRIPT_DIR/"  --strip-components=1 "$taropts" - '*/static-web-server'
+}
+
+download "$FORCE_DOWNLOAD"
+pushd "${SCRIPT_DIR}/.." &>/dev/null
+$NO_SERVE || exec "$SERVER" "$@"

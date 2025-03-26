@@ -126,7 +126,8 @@ ln -sf  "../../bin/pre-commit" .git/hooks/pre-commit
 git submodule add "$REVEAL"
 git add .
 git ci -m 'Initial slide skel'
-make bin/static-web-server
+echo "Download static web server"
+make download_server
 
 popd &>/dev/null
 popd &>/dev/null
